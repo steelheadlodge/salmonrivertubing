@@ -128,6 +128,80 @@
     </div>
   </div>
 
+  <!-- ===================== HOW IT WORKS ===================== -->
+  <section class="how-it-works" id="tubing" aria-labelledby="how-title">
+    <div class="container">
+      <span class="section-label">Step by Step</span>
+      <h2 class="section-title" id="how-title">How It <em>Works</em></h2>
+      <p class="section-sub">No experience needed. We handle everything — just show up ready to float.</p>
+
+      <div class="how-grid">
+        <div class="how-steps">
+          <div class="how-step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>Arrive at the Lodge</h4>
+              <p>Pick up your tube &amp; gear — we handle everything. Life jackets and dry bags available.</p>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>We Drop You Upstream</h4>
+              <p>Shuttle to the put-in — sit back and float. No cars to shuttle yourself.</p>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>Float the Salmon River</h4>
+              <p>Gorgeous scenery, gentle current, pure summer fun. 2–3 hours of pure relaxation.</p>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <h4>We Pick You Up</h4>
+              <p>Meet you at the take-out — no stress, no logistics. We'll be waiting.</p>
+            </div>
+          </div>
+          <div class="how-step">
+            <div class="step-num">5</div>
+            <div class="step-body">
+              <h4>Feast at Joe's Smokehouse</h4>
+              <p>BBQ ribs on the river — you've earned it. Open seasonally right on site.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="good-to-know">
+          <h3>Good to Know</h3>
+          <div class="gtk-item">
+            <h4>How long is the float?</h4>
+            <p>Typically 2–3 hours depending on current flow. Perfect half-day adventure.</p>
+          </div>
+          <div class="gtk-item">
+            <h4>Is it safe for kids?</h4>
+            <p>Yes! At 250–600 CFS it's gentle and safe for all ages. Check our live tubing status before booking.</p>
+          </div>
+          <div class="gtk-item">
+            <h4>What should I wear?</h4>
+            <p>Swimsuit, water shoes or sandals, sunscreen. Bring a dry bag for valuables. We provide life jackets.</p>
+          </div>
+          <div class="gtk-item">
+            <h4>Can I bring my own tubes?</h4>
+            <p>Yes — our shuttle service is available even if you bring your own gear. Call to arrange.</p>
+          </div>
+          <div class="gtk-item">
+            <h4>Do you take reservations?</h4>
+            <p>Walk-ins welcome, but calling ahead is recommended for groups of 4 or more. <a href="tel:3152984371">(315) 298-4371</a></p>
+          </div>
+          <a href="tel:3152984371" class="btn btn-primary" style="margin-top:1.5rem;">📞 Call to Book — (315) 298-4371</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===================== RIVER CONDITIONS ===================== -->
   <section class="conditions" id="conditions" aria-labelledby="conditions-title">
     <div class="container">
@@ -153,11 +227,11 @@
 
       <!-- 2 condition cards -->
       <div class="cond-cards">
-        <div class="cond-card">
-          <span class="cond-icon">🛶</span>
+        <div class="cond-card" id="tubing-cond-card">
+          <span class="cond-icon" id="tubing-cond-icon">🛶</span>
           <h3>Tubing Conditions</h3>
-          <a href="https://www.safewaters.com/facility/lighthouse-hill" target="_blank" rel="noopener" class="cond-link">Check SafeWaters.com</a>
-          <p>Visit <a href="https://www.safewaters.com/facility/lighthouse-hill" target="_blank" rel="noopener">SafeWaters.com</a> for current dam release · <a href="https://waterdata.usgs.gov/monitoring-location/USGS-04250200/" target="_blank" rel="noopener">USGS Pineville Gauge</a> for live CFS · Or call <a href="tel:3152984371">(315) 298-4371</a></p>
+          <div id="tubing-cond-status" class="cond-status-label">Loading…</div>
+          <p id="tubing-cond-msg">Checking live river data…</p>
         </div>
         <div class="cond-card">
           <span class="cond-icon">🏠</span>
@@ -744,6 +818,10 @@
       const elGauge = document.getElementById('flow-gauge');
       const elBadge = document.getElementById('flow-status-badge');
       const elSt    = document.getElementById('flow-status');
+      const elCard  = document.getElementById('tubing-cond-card');
+      const elCardIcon = document.getElementById('tubing-cond-icon');
+      const elCardStatus = document.getElementById('tubing-cond-status');
+      const elCardMsg = document.getElementById('tubing-cond-msg');
 
       // Helper: pull the most-recent non-missing value from a USGS IV response
       function getLatest(data) {
@@ -781,21 +859,41 @@
           elBadge.style.fontSize = '1.6rem';
           elSt.textContent = 'Live data unavailable — call (315) 298-4371 to check conditions';
           elSt.className   = 'live-loading status-warn';
+          elCardIcon.textContent = '❓';
+          elCardStatus.textContent = 'Data Unavailable';
+          elCardStatus.style.color = 'var(--gold)';
+          elCardMsg.textContent = 'Unable to load live river data. Call us at (315) 298-4371 to check current conditions.';
+          elCard.style.borderColor = 'rgba(196,154,60,.4)';
         } else if (cfs < 150) {
           elBadge.textContent = 'LOW';
           elBadge.style.color = 'var(--gold)';
           elSt.textContent = '⚠ Low Flow — May be too shallow for tubing';
           elSt.className   = 'live-loading status-warn';
+          elCardIcon.textContent = '⚠️';
+          elCardStatus.textContent = 'Low Water — May Be Too Shallow';
+          elCardStatus.style.color = 'var(--gold)';
+          elCardMsg.textContent = 'Flow at ' + Math.round(cfs).toLocaleString() + ' CFS. River is running low — tubing may not be possible in some sections. Call us to check: (315) 298-4371.';
+          elCard.style.borderColor = 'rgba(196,154,60,.4)';
         } else if (cfs <= 600) {
           elBadge.textContent = 'GOOD';
           elBadge.style.color = '#4caf50';
           elSt.textContent = '✅ Great Tubing Conditions! (' + Math.round(cfs).toLocaleString() + ' CFS)';
           elSt.className   = 'live-loading status-good';
+          elCardIcon.textContent = '✅';
+          elCardStatus.textContent = 'Great Conditions — Float Day!';
+          elCardStatus.style.color = '#4caf50';
+          elCardMsg.textContent = 'Flow at ' + Math.round(cfs).toLocaleString() + ' CFS. River is running at ideal levels for tubing and kayaking. Book your float today — call (315) 298-4371.';
+          elCard.style.borderColor = 'rgba(76,175,80,.4)';
         } else {
           elBadge.textContent = 'HIGH';
           elBadge.style.color = '#e57373';
           elSt.textContent = '⚠ High Flow — Use Caution · Check release schedule below';
           elSt.className   = 'live-loading status-warn';
+          elCardIcon.textContent = '🚫';
+          elCardStatus.textContent = 'High Water — Not Recommended';
+          elCardStatus.style.color = '#e57373';
+          elCardMsg.textContent = 'Flow at ' + Math.round(cfs).toLocaleString() + ' CFS. River running high and fast. Tubing not recommended. Better suited for white water rafting with experienced guides. Call us for alternatives: (315) 298-4371.';
+          elCard.style.borderColor = 'rgba(229,115,115,.4)';
         }
 
       } catch {
@@ -804,6 +902,8 @@
         elBadge.textContent = '--';
         elSt.textContent    = 'Live data unavailable — call (315) 298-4371 to check conditions';
         elSt.className      = 'live-loading status-warn';
+        elCardStatus.textContent = 'Data Unavailable';
+        elCardMsg.textContent = 'Unable to load live river data. Call (315) 298-4371 to check current conditions.';
       }
     }
     fetchFlow();
