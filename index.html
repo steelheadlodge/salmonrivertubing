@@ -145,8 +145,8 @@
           <div class="live-label">Gauge (ft)</div>
         </div>
         <div class="live-stat-box">
-          <div class="live-num" id="flow-temp">--</div>
-          <div class="live-label">Water °F</div>
+          <div class="live-num" id="flow-status-badge">--</div>
+          <div class="live-label">Float Status</div>
         </div>
       </div>
       <div class="live-loading" id="flow-status" aria-live="polite">⏳ Loading live data from USGS…</div>
@@ -742,7 +742,7 @@
     async function fetchFlow() {
       const elCfs   = document.getElementById('flow-cfs');
       const elGauge = document.getElementById('flow-gauge');
-      const elTemp  = document.getElementById('flow-temp');
+      const elBadge = document.getElementById('flow-status-badge');
       const elSt    = document.getElementById('flow-status');
 
       // Helper: pull the most-recent non-missing value from a USGS IV response
@@ -761,34 +761,39 @@
       const BASE = 'https://waterservices.usgs.gov/nwis/iv/?sites=04250200&period=PT2H&format=json&parameterCd=';
 
       try {
-        const [resCfs, resGauge, resTemp] = await Promise.all([
+        const [resCfs, resGauge] = await Promise.all([
           fetch(BASE + '00060'),   // discharge CFS
-          fetch(BASE + '00065'),   // gauge height ft
-          fetch(BASE + '00010')    // water temp °C
+          fetch(BASE + '00065')    // gauge height ft
         ]);
 
-        const [dataCfs, dataGauge, dataTemp] = await Promise.all([
-          resCfs.json(), resGauge.json(), resTemp.json()
+        const [dataCfs, dataGauge] = await Promise.all([
+          resCfs.json(), resGauge.json()
         ]);
 
         const cfs   = getLatest(dataCfs);
         const gauge = getLatest(dataGauge);
-        const tempC = getLatest(dataTemp);
 
         elCfs.textContent   = cfs   !== null ? Math.round(cfs).toLocaleString() : '--';
         elGauge.textContent = gauge !== null ? gauge.toFixed(1)                 : '--';
-        elTemp.textContent  = tempC !== null ? (tempC * 9/5 + 32).toFixed(0) + '°' : '--';
 
         if (cfs === null) {
+          elBadge.textContent = '?';
+          elBadge.style.fontSize = '1.6rem';
           elSt.textContent = 'Live data unavailable — call (315) 298-4371 to check conditions';
           elSt.className   = 'live-loading status-warn';
         } else if (cfs < 150) {
+          elBadge.textContent = 'LOW';
+          elBadge.style.color = 'var(--gold)';
           elSt.textContent = '⚠ Low Flow — May be too shallow for tubing';
           elSt.className   = 'live-loading status-warn';
         } else if (cfs <= 600) {
+          elBadge.textContent = 'GOOD';
+          elBadge.style.color = '#4caf50';
           elSt.textContent = '✅ Great Tubing Conditions! (' + Math.round(cfs).toLocaleString() + ' CFS)';
           elSt.className   = 'live-loading status-good';
         } else {
+          elBadge.textContent = 'HIGH';
+          elBadge.style.color = '#e57373';
           elSt.textContent = '⚠ High Flow — Use Caution · Check release schedule below';
           elSt.className   = 'live-loading status-warn';
         }
@@ -796,7 +801,7 @@
       } catch {
         elCfs.textContent   = '--';
         elGauge.textContent = '--';
-        elTemp.textContent  = '--';
+        elBadge.textContent = '--';
         elSt.textContent    = 'Live data unavailable — call (315) 298-4371 to check conditions';
         elSt.className      = 'live-loading status-warn';
       }
